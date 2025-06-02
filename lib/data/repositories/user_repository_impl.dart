@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../models/user_model.dart';
@@ -26,7 +25,7 @@ class UserRepositoryImpl implements UserRepository {
   Stream<User?> get userStream {
     _userController ??= StreamController<User?>.broadcast();
 
-    // Listen to RevenueCat customer 
+    // Listen to   
     revenueCatService.customerInfoStream
         .listen((customerInfo) async {
           final currentUser = await getCurrentUser();
