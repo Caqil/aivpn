@@ -39,6 +39,15 @@ dependencies:
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
   equatable: ^2.0.7
+  purchases_flutter: ^8.9.0
+  device_info_plus: ^11.4.0
+  flutter_earth_globe: ^1.0.5
+  flutter_screenutil: ^5.9.3
+  url_launcher: ^6.3.1
+  intl: ^0.20.2
+  google_mobile_ads: ^6.0.0
+  share_plus: ^11.0.0
+  load_switch: ^2.2.0
 
 dev_dependencies:
   flutter_test:
