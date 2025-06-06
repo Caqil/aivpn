@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/user/user_bloc.dart';
 import '../../bloc/user/user_event.dart';
@@ -9,7 +8,6 @@ import '../../bloc/server/server_event.dart';
 import '../home/home_screen.dart';
 import '../privacy/privacy_screen.dart';
 import 'loading_splash_screen.dart';
-import '../../../core/constants/app_constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

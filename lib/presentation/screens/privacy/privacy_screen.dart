@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../bloc/user/user_bloc.dart';
 import '../../bloc/user/user_event.dart';
 import '../../../core/constants/app_constants.dart';
@@ -18,51 +17,51 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeConsent();
+   //_initializeConsent();
   }
 
-  void _initializeConsent() {
-    // Initialize Google Mobile Ads consent
-    ConsentDebugSettings debugSettings = ConsentDebugSettings(
-      debugGeography: DebugGeography.debugGeographyEea,
-      testIdentifiers: [
-        '755D41BD-57F4-4188-928B-B58F25AC2ECA',
-        '19C385DE-0C84-46CE-A70B-07B84476B685',
-      ],
-    );
+  // void _initializeConsent() {
+  //   // Initialize Google Mobile Ads consent
+  //   ConsentDebugSettings debugSettings = ConsentDebugSettings(
+  //     debugGeography: DebugGeography.debugGeographyEea,
+  //     testIdentifiers: [
+  //       '755D41BD-57F4-4188-928B-B58F25AC2ECA',
+  //       '19C385DE-0C84-46CE-A70B-07B84476B685',
+  //     ],
+  //   );
 
-    final params = ConsentRequestParameters(
-      consentDebugSettings: debugSettings,
-    );
+  //   final params = ConsentRequestParameters(
+  //     consentDebugSettings: debugSettings,
+  //   );
 
-    ConsentInformation.instance.requestConsentInfoUpdate(
-      params,
-      () async {
-        if (await ConsentInformation.instance.isConsentFormAvailable()) {
-          _loadConsentForm();
-        }
-      },
-      (FormError error) {
-        debugPrint('Consent error: ${error.message}');
-      },
-    );
-  }
+  //   ConsentInformation.instance.requestConsentInfoUpdate(
+  //     params,
+  //     () async {
+  //       if (await ConsentInformation.instance.isConsentFormAvailable()) {
+  //         _loadConsentForm();
+  //       }
+  //     },
+  //     (FormError error) {
+  //       debugPrint('Consent error: ${error.message}');
+  //     },
+  //   );
+  // }
 
-  void _loadConsentForm() {
-    ConsentForm.loadConsentForm(
-      (ConsentForm consentForm) async {
-        var status = await ConsentInformation.instance.getConsentStatus();
-        if (status == ConsentStatus.required) {
-          consentForm.show((FormError? formError) {
-            _loadConsentForm();
-          });
-        }
-      },
-      (FormError formError) {
-        debugPrint('Consent form error: ${formError.message}');
-      },
-    );
-  }
+  // void _loadConsentForm() {
+  //   ConsentForm.loadConsentForm(
+  //     (ConsentForm consentForm) async {
+  //       var status = await ConsentInformation.instance.getConsentStatus();
+  //       if (status == ConsentStatus.required) {
+  //         consentForm.show((FormError? formError) {
+  //           _loadConsentForm();
+  //         });
+  //       }
+  //     },
+  //     (FormError formError) {
+  //       debugPrint('Consent form error: ${formError.message}');
+  //     },
+  //   );
+  // }
 
   void _acceptAndContinue() {
     // Create user and navigate to main app

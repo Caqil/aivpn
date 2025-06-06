@@ -57,7 +57,11 @@ class _GlobeWidgetState extends State<GlobeWidget> {
   }
 
   Widget _buildPointLabel(
-      BuildContext context, Point point, bool isHovering, bool visible) {
+    BuildContext context,
+    Point point,
+    bool isHovering,
+    bool visible,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -70,20 +74,24 @@ class _GlobeWidgetState extends State<GlobeWidget> {
             color: CupertinoColors.black.withOpacity(0.2),
             blurRadius: 10,
             spreadRadius: 2,
-          )
+          ),
         ],
       ),
       child: Text(
         point.label ?? '',
-        style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-              color: CupertinoColors.white,
-            ),
+        style: CupertinoTheme.of(
+          context,
+        ).textTheme.textStyle.copyWith(color: CupertinoColors.white),
       ),
     );
   }
 
-  Widget _buildConnectionLabel(BuildContext context, PointConnection connection,
-      bool isHovering, bool visible) {
+  Widget _buildConnectionLabel(
+    BuildContext context,
+    PointConnection connection,
+    bool isHovering,
+    bool visible,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -96,106 +104,118 @@ class _GlobeWidgetState extends State<GlobeWidget> {
             color: CupertinoColors.black.withOpacity(0.2),
             blurRadius: 10,
             spreadRadius: 2,
-          )
+          ),
         ],
       ),
       child: Text(
         connection.label ?? '',
-        style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-              color: CupertinoColors.white,
-            ),
+        style: CupertinoTheme.of(
+          context,
+        ).textTheme.textStyle.copyWith(color: CupertinoColors.white),
       ),
     );
   }
 
   void _updateGlobePoints() {
-    final serverState = context.read<ServerBloc>().state;
-    final vpnState = context.read<VpnBloc>().state;
-    final userState = context.read<UserBloc>().state;
+    try {
+      final serverState = context.read<ServerBloc>().state;
+      final vpnState = context.read<VpnBloc>().state;
 
-    if (serverState is! ServerLoaded || userState is! UserLoaded) {
-      return;
-    }
-
-    // Clear existing points and connections
-    for (var point in points) {
-      _controller.removePoint(point.id);
-    }
-    for (var connection in connections) {
-      _controller.removePointConnection(connection.id);
-    }
-
-    points.clear();
-    connections.clear();
-
-    // User location point (static for now, you can implement geolocation)
-    final userPoint = Point(
-      id: '1',
-      coordinates: const GlobeCoordinates(40.7128, -74.0060), // New York as default
-      label: 'Your Location',
-      labelBuilder: _buildPointLabel,
-      style: const PointStyle(
-        color: CupertinoColors.systemRed,
-        size: 6,
-      ),
-    );
-    points.add(userPoint);
-
-    // Server point (if selected)
-    if (serverState.selectedServer != null) {
-      final serverPoint = Point(
-        id: '2',
-        coordinates: GlobeCoordinates(
-          _parseCoordinate(serverState.selectedServer!.address), // Use address as latitude for demo
-          _parseCoordinate(serverState.selectedServer!.port.toString()), // Use port as longitude for demo
-        ),
-        label: serverState.selectedServer!.displayName,
-        labelBuilder: _buildPointLabel,
-        style: const PointStyle(
-          color: CupertinoColors.systemGreen,
-          size: 6,
-        ),
-      );
-      points.add(serverPoint);
-
-      // Add connection if VPN is connected
-      if (vpnState is VpnConnected) {
-        final connection = PointConnection(
-          id: '1',
-          start: userPoint.coordinates,
-          end: serverPoint.coordinates,
-          isMoving: true,
-          labelBuilder: _buildConnectionLabel,
-          isLabelVisible: false,
-          style: const PointConnectionStyle(
-            type: PointConnectionType.solid,
-            color: CupertinoColors.systemRed,
-            lineWidth: 3,
-            dashSize: 4,
-            spacing: 10,
-          ),
-          label: 'Connected to ${serverState.selectedServer!.name}',
-        );
-        connections.add(connection);
+      // Try to get UserBloc state, but don't fail if it's not available
+      UserState? userState;
+      try {
+        userState = context.read<UserBloc>().state;
+      } catch (e) {
+        print('UserBloc not available: $e');
       }
-    }
 
-    // Update globe with new points and connections
-    _controller.onLoaded = () {
+      if (serverState is! ServerLoaded) {
+        return;
+      }
+
+      // Clear existing points and connections
       for (var point in points) {
-        _controller.addPoint(point);
+        _controller.removePoint(point.id);
       }
       for (var connection in connections) {
-        _controller.addPointConnection(connection, animateDraw: true);
+        _controller.removePointConnection(connection.id);
       }
 
-      // Focus on appropriate location
-      if (vpnState is VpnConnected && points.length > 1) {
-        _controller.focusOnCoordinates(points[1].coordinates, animate: true);
-      } else {
-        _controller.focusOnCoordinates(points[0].coordinates, animate: true);
+      points.clear();
+      connections.clear();
+
+      // User location point (static for now, you can implement geolocation)
+      final userPoint = Point(
+        id: '1',
+        coordinates: const GlobeCoordinates(
+          40.7128,
+          -74.0060,
+        ), // New York as default
+        label: 'Your Location',
+        labelBuilder: _buildPointLabel,
+        style: const PointStyle(color: CupertinoColors.systemRed, size: 6),
+      );
+      points.add(userPoint);
+
+      // Server point (if selected)
+      if (serverState.selectedServer != null) {
+        final serverPoint = Point(
+          id: '2',
+          coordinates: GlobeCoordinates(
+            _parseCoordinate(
+              serverState.selectedServer!.address,
+            ), // Use address as latitude for demo
+            _parseCoordinate(
+              serverState.selectedServer!.port.toString(),
+            ), // Use port as longitude for demo
+          ),
+          label: serverState.selectedServer!.displayName,
+          labelBuilder: _buildPointLabel,
+          style: const PointStyle(color: CupertinoColors.systemGreen, size: 6),
+        );
+        points.add(serverPoint);
+
+        // Add connection if VPN is connected
+        if (vpnState is VpnConnected) {
+          final connection = PointConnection(
+            id: '1',
+            start: userPoint.coordinates,
+            end: serverPoint.coordinates,
+            isMoving: true,
+            labelBuilder: _buildConnectionLabel,
+            isLabelVisible: false,
+            style: const PointConnectionStyle(
+              type: PointConnectionType.solid,
+              color: CupertinoColors.systemRed,
+              lineWidth: 3,
+              dashSize: 4,
+              spacing: 10,
+            ),
+            label: 'Connected to ${serverState.selectedServer!.name}',
+          );
+          connections.add(connection);
+        }
       }
-    };
+
+      // Update globe with new points and connections
+      _controller.onLoaded = () {
+        for (var point in points) {
+          _controller.addPoint(point);
+        }
+        for (var connection in connections) {
+          _controller.addPointConnection(connection, animateDraw: true);
+        }
+
+        // Focus on appropriate location
+        if (vpnState is VpnConnected && points.length > 1) {
+          _controller.focusOnCoordinates(points[1].coordinates, animate: true);
+        } else {
+          _controller.focusOnCoordinates(points[0].coordinates, animate: true);
+        }
+      };
+    } catch (e) {
+      print('Error updating globe points: $e');
+    }
   }
 
   double _parseCoordinate(String value) {
@@ -211,27 +231,28 @@ class _GlobeWidgetState extends State<GlobeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ServerBloc, ServerState>(
-      listener: (context, serverState) {
-        _updateGlobePoints();
-      },
-      child: BlocListener<VpnBloc, VpnState>(
-        listener: (context, vpnState) {
-          _updateGlobePoints();
-        },
-        child: BlocListener<UserBloc, UserState>(
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ServerBloc, ServerState>(
+          listener: (context, serverState) {
+            _updateGlobePoints();
+          },
+        ),
+        BlocListener<VpnBloc, VpnState>(
+          listener: (context, vpnState) {
+            _updateGlobePoints();
+          },
+        ),
+        BlocListener<UserBloc, UserState>(
           listener: (context, userState) {
             _updateGlobePoints();
           },
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: FlutterEarthGlobe(
-              controller: _controller,
-              radius: 120,
-            ),
-          ),
         ),
+      ],
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: FlutterEarthGlobe(controller: _controller, radius: 120),
       ),
     );
   }

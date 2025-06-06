@@ -24,25 +24,6 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Stream<User?> get userStream {
     _userController ??= StreamController<User?>.broadcast();
-
-    // Listen to   
-    revenueCatService.customerInfoStream
-        .listen((customerInfo) async {
-          final currentUser = await getCurrentUser();
-          if (currentUser != null) {
-            final subscription = revenueCatService
-                .parseSubscriptionFromCustomerInfo(customerInfo);
-            final updatedUser = currentUser.copyWith(
-              subscription: subscription,
-            );
-            await _saveUser(updatedUser);
-            _userController?.add(updatedUser);
-          }
-        })
-        .onError((error) {
-          print('Error listening to customer info stream: $error');
-        });
-
     return _userController!.stream;
   }
 

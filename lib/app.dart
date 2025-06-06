@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'injection_container.dart' as di;
 import 'presentation/bloc/server/server_bloc.dart';
 import 'presentation/bloc/server/server_event.dart';
 import 'presentation/bloc/vpn/vpn_bloc.dart';
-import 'presentation/screens/home/home_screen.dart';
+import 'presentation/bloc/user/user_bloc.dart';
+import 'presentation/bloc/user/user_event.dart';
+import 'presentation/screens/splash/splash_screen.dart';
 
 class VpnApp extends StatelessWidget {
   @override
@@ -15,14 +18,22 @@ class VpnApp extends StatelessWidget {
         BlocProvider<ServerBloc>(
           create: (context) => di.sl<ServerBloc>()..add(LoadServers()),
         ),
-        BlocProvider<VpnBloc>(
-          create: (context) => di.sl<VpnBloc>(),
+        BlocProvider<VpnBloc>(create: (context) => di.sl<VpnBloc>()),
+        BlocProvider<UserBloc>(
+          create: (context) => di.sl<UserBloc>()..add(LoadUser()),
         ),
       ],
-      child: MaterialApp(
-        title: 'VPN App',
-        theme: _buildTheme(),
-        home: HomeScreen(),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812), // iPhone X design size
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return MaterialApp(
+            title: 'VPN App',
+            theme: _buildTheme(),
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

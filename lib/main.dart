@@ -7,7 +7,7 @@ import 'injection_container.dart' as di;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize dependencies
+  //MobileAds.instance.initialize();
   await di.init();
 
   runApp(VpnApp());

@@ -18,6 +18,8 @@ import '../subscription/subscription_screen.dart';
 import '../../../core/services/admob_service.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -26,8 +28,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    AdMobService.createInterstitialAd();
-    AdMobService.createRewardedAd();
+    // AdMobService.createInterstitialAd();
+    // AdMobService.createRewardedAd();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -39,9 +41,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      AdMobService.showAppOpenAdIfAvailable();
-    }
+    // if (state == AppLifecycleState.resumed) {
+    //   AdMobService.showAppOpenAdIfAvailable();
+    // }
   }
 
   @override
@@ -364,9 +366,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
                 // Show ads for free users
                 if (userState is UserLoaded && !userState.user.isPremium) {
-                  Future.delayed(Duration.zero, () {
-                    AdMobService.showInterstitialAd();
-                  });
+                  // Future.delayed(Duration.zero, () {
+                  //   AdMobService.showInterstitialAd();
+                  // });
                 }
               },
               child: const Text(
@@ -394,9 +396,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       // Show ads for free users
       if (userState is UserLoaded && !userState.user.isPremium) {
-        Future.delayed(const Duration(seconds: 2), () {
-          AdMobService.showRewardedAd();
-        });
+        // Future.delayed(const Duration(seconds: 2), () {
+        //   AdMobService.showRewardedAd();
+        // });
       }
     } else {
       _showNoServerSelectedDialog(context);
