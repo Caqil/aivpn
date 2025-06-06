@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'injection_container.dart' as di;
 import 'presentation/bloc/server/server_bloc.dart';
-import 'presentation/bloc/server/server_event.dart';
 import 'presentation/bloc/vpn/vpn_bloc.dart';
 import 'presentation/bloc/user/user_bloc.dart';
-import 'presentation/bloc/user/user_event.dart';
+import 'presentation/bloc/user_creation/user_creation_bloc.dart';
 import 'presentation/screens/splash/splash_screen.dart';
 
 class VpnApp extends StatelessWidget {
@@ -15,25 +13,17 @@ class VpnApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ServerBloc>(
-          create: (context) => di.sl<ServerBloc>()..add(LoadServers()),
-        ),
+        BlocProvider<ServerBloc>(create: (context) => di.sl<ServerBloc>()),
         BlocProvider<VpnBloc>(create: (context) => di.sl<VpnBloc>()),
-        BlocProvider<UserBloc>(
-          create: (context) => di.sl<UserBloc>()..add(LoadUser()),
+        BlocProvider<UserBloc>(create: (context) => di.sl<UserBloc>()),
+        BlocProvider<UserCreationBloc>(
+          create: (context) => di.sl<UserCreationBloc>(),
         ),
       ],
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812), // iPhone X design size
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
-          return MaterialApp(
-            title: 'VPN App',
-            theme: _buildTheme(),
-            home: const SplashScreen(),
-          );
-        },
+      child: MaterialApp(
+        title: 'VPN App',
+        theme: _buildTheme(),
+        home: const SplashScreen(),
       ),
     );
   }

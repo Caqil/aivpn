@@ -1,13 +1,14 @@
+
+import 'package:aivpn/domain/entities/server.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../bloc/user/user_bloc.dart';
-import '../../bloc/user/user_event.dart';
-import '../../bloc/user/user_state.dart';
 import '../../bloc/server/server_bloc.dart';
 import '../../bloc/server/server_event.dart';
 import '../home/home_screen.dart';
 import '../privacy/privacy_screen.dart';
 import 'loading_splash_screen.dart';
+import '../../../data/services/app_initialization_service.dart';
+import '../../../injection_container.dart' as di;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,49 +18,44 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late AppInitializationService _initService;
+
   @override
   void initState() {
     super.initState();
+    _initService = di.sl<AppInitializationService>();
     _initializeApp();
   }
 
   Future<void> _initializeApp() async {
-    // Wait a bit for the splash animation
+    // Wait for splash animation
     await Future.delayed(const Duration(seconds: 2));
 
-    // Load user and check if exists
-    if (mounted) {
-      context.read<UserBloc>().add(LoadUser());
-    }
-  }
+    if (!mounted) return;
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<UserBloc, UserState>(
-      listener: (context, state) {
-        if (state is UserLoaded) {
-          // User exists, load servers and navigate to home
-          context.read<ServerBloc>().add(LoadServers());
-          _navigateToHome();
-        } else if (state is UserNotFound) {
-          // No user found, show privacy screen
-          _navigateToPrivacy();
-        } else if (state is UserError) {
-          // Error loading user, try to create new user
-          context.read<UserBloc>().add(CreateUser());
+    try {
+      // Initialize the app and handle user creation/loading
+      final result = await _initService.initializeApp();
+
+      if (result.success && result.userProfile != null) {
+        // Update servers from user profile
+        final servers = result.userProfile!.servers;
+        if (servers.isNotEmpty) {
+          context.read<ServerBloc>().add(LoadServersFromProfile(servers));
         }
-      },
-      child: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          if (state is UserLoading || state is UserInitial) {
-            return const LoadingSplashScreen();
-          }
 
-          // For other states, show loading while navigation is happening
-          return const LoadingSplashScreen();
-        },
-      ),
-    );
+        // Navigate to home screen
+        _navigateToHome();
+      } else {
+        // Show error and navigate to privacy screen
+        _showErrorAndNavigateToPrivacy(result.message);
+      }
+    } catch (e) {
+      // Handle initialization errors
+      _showErrorAndNavigateToPrivacy(
+        'Failed to initialize app: ${e.toString()}',
+      );
+    }
   }
 
   void _navigateToHome() {
@@ -77,4 +73,26 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     }
   }
+
+  void _showErrorAndNavigateToPrivacy(String error) {
+    print('Initialization error: $error');
+
+    // For now, navigate to privacy screen
+    // In a real app, you might want to show an error dialog first
+    _navigateToPrivacy();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const LoadingSplashScreen();
+  }
+}
+
+class LoadServersFromProfile extends ServerEvent {
+  final List<Server> servers;
+
+  LoadServersFromProfile(this.servers);
+
+  @override
+  List<Object?> get props => [servers];
 }

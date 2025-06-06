@@ -11,6 +11,15 @@ abstract class ServerEvent extends Equatable {
 
 class LoadServers extends ServerEvent {}
 
+class LoadServersFromProfile extends ServerEvent {
+  final List<Server> servers;
+
+  LoadServersFromProfile(this.servers);
+
+  @override
+  List<Object?> get props => [servers];
+}
+
 class SelectServer extends ServerEvent {
   final Server server;
   SelectServer(this.server);

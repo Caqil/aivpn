@@ -30,8 +30,9 @@ class ServerLoaded extends ServerState {
   }) {
     return ServerLoaded(
       servers: servers ?? this.servers,
-      selectedServer:
-          clearSelected ? null : (selectedServer ?? this.selectedServer),
+      selectedServer: clearSelected
+          ? null
+          : (selectedServer ?? this.selectedServer),
       favoriteServers: favoriteServers ?? this.favoriteServers,
     );
   }

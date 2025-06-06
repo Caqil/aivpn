@@ -1,3 +1,4 @@
+// lib/core/services/revenuecat_service.dart - Updated
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -8,8 +9,8 @@ import '../errors/exceptions.dart';
 
 class RevenueCatService {
   static final String _apiKey = Platform.isIOS
-      ? 'appl_YOUR_IOS_API_KEY'
-      : 'goog_YOUR_ANDROID_API_KEY';
+      ? 'appl_YOUR_IOS_API_KEY'  // Replace with your iOS API key
+      : 'goog_YOUR_ANDROID_API_KEY';  // Replace with your Android API key
 
   static final String monthlyProductId = Platform.isIOS
       ? 'monthly_360'
@@ -25,19 +26,32 @@ class RevenueCatService {
 
   final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   String? _deviceId;
+  String? _userId;
+
+  // Stream controller for customer info updates
+  final StreamController<CustomerInfo> _customerInfoController = 
+      StreamController<CustomerInfo>.broadcast();
+
+  Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
 
   Future<void> initialize() async {
     try {
       // Get device ID
       _deviceId = await _getDeviceId();
+      _userId = _deviceId; // Use device ID as user ID
 
       // Configure RevenueCat
       await Purchases.setLogLevel(LogLevel.info);
 
       PurchasesConfiguration configuration = PurchasesConfiguration(_apiKey)
-        ..appUserID = _deviceId;
+        ..appUserID = _userId;
 
       await Purchases.configure(configuration);
+
+      // Set up customer info listener
+      Purchases.addCustomerInfoUpdateListener((customerInfo) {
+        _customerInfoController.add(customerInfo);
+      });
 
       print('RevenueCat initialized with device ID: $_deviceId');
     } catch (e) {
@@ -61,6 +75,7 @@ class RevenueCatService {
   }
 
   String? get deviceId => _deviceId;
+  String get getUserId() => _userId ?? _deviceId ?? '';
 
   Future<CustomerInfo> getCustomerInfo() async {
     try {
@@ -81,6 +96,7 @@ class RevenueCatService {
   Future<CustomerInfo> purchasePackage(Package package) async {
     try {
       CustomerInfo customerInfo = await Purchases.purchasePackage(package);
+      _customerInfoController.add(customerInfo);
       return customerInfo;
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -98,9 +114,78 @@ class RevenueCatService {
 
   Future<CustomerInfo> restorePurchases() async {
     try {
-      return await Purchases.restorePurchases();
+      final customerInfo = await Purchases.restorePurchases();
+      _customerInfoController.add(customerInfo);
+      return customerInfo;
     } catch (e) {
       throw VpnException('Failed to restore purchases: $e');
+    }
+  }
+
+  // Check if user has active premium subscription
+  bool isPremium(CustomerInfo customerInfo) {
+    try {
+      // Check if user has any active entitlement
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+        if (entitlement.isActive) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error checking premium status: $e');
+      return false;
+    }
+  }
+
+  // Check if user's subscription is expired
+  bool isExpired(CustomerInfo customerInfo) {
+    try {
+      // If user has no entitlements, consider as expired/free user
+      if (customerInfo.entitlements.all.isEmpty) {
+        return true;
+      }
+
+      // Check if any entitlement is expired
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+        if (!entitlement.isActive) {
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      print('Error checking expiration status: $e');
+      return true; // Default to expired if we can't determine
+    }
+  }
+
+  // Get expiration date of current subscription
+  DateTime? getExpirationDate(CustomerInfo customerInfo) {
+    try {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+        if (entitlement.isActive && entitlement.expirationDate != null) {
+          return DateTime.parse(entitlement.expirationDate!);
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting expiration date: $e');
+      return null;
+    }
+  }
+
+  // Get current subscription product ID
+  String? getCurrentProductId(CustomerInfo customerInfo) {
+    try {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+        if (entitlement.isActive) {
+          return entitlement.productIdentifier;
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error getting current product ID: $e');
+      return null;
     }
   }
 
@@ -167,10 +252,7 @@ class RevenueCatService {
       }
 
       final customerInfo = await purchasePackage(packageToPurchase);
-      return customerInfo.entitlements.all.isNotEmpty &&
-          customerInfo.entitlements.all.values.any(
-            (entitlement) => entitlement.isActive,
-          );
+      return isPremium(customerInfo);
     } catch (e) {
       if (e is VpnException) rethrow;
       throw VpnException('Purchase failed: $e');
@@ -187,8 +269,7 @@ class RevenueCatService {
 
       // Get the first active entitlement
       EntitlementInfo? activeEntitlement;
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           activeEntitlement = entitlement;
           break;
@@ -245,5 +326,41 @@ class RevenueCatService {
       print('Error parsing subscription: $e');
       return null;
     }
+  }
+
+  // Helper method to check subscription status without throwing errors
+  Future<bool> hasActiveSubscription() async {
+    try {
+      final customerInfo = await getCustomerInfo();
+      return isPremium(customerInfo);
+    } catch (e) {
+      print('Error checking subscription status: $e');
+      return false;
+    }
+  }
+
+  // Helper method to get subscription info safely
+  Future<Map<String, dynamic>> getSubscriptionInfo() async {
+    try {
+      final customerInfo = await getCustomerInfo();
+      return {
+        'isPremium': isPremium(customerInfo),
+        'isExpired': isExpired(customerInfo),
+        'expirationDate': getExpirationDate(customerInfo),
+        'productId': getCurrentProductId(customerInfo),
+      };
+    } catch (e) {
+      print('Error getting subscription info: $e');
+      return {
+        'isPremium': false,
+        'isExpired': true,
+        'expirationDate': null,
+        'productId': null,
+      };
+    }
+  }
+
+  void dispose() {
+    _customerInfoController.close();
   }
 }

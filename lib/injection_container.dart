@@ -1,4 +1,4 @@
-// ${filename}
+// lib/injection_container.dart - Updated
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
@@ -6,21 +6,26 @@ import 'package:dio/dio.dart';
 // Data layer
 import 'data/datasources/server_api.dart';
 import 'data/datasources/local_storage.dart';
+import 'data/datasources/user_creation_api.dart';
 import 'data/repositories/server_repository.dart';
 import 'data/repositories/vpn_repository.dart';
 import 'data/repositories/user_repository_impl.dart';
+import 'data/services/app_initialization_service.dart';
 
 // Domain layer
 import 'domain/repositories/server_repository.dart';
+import 'domain/repositories/user_creation_repository_impl.dart';
 import 'domain/repositories/vpn_repository.dart';
+import 'domain/repositories/user_creation_repository.dart';
 import 'domain/repositories/user_repository.dart';
 
 // Presentation layer
 import 'presentation/bloc/server/server_bloc.dart';
 import 'presentation/bloc/vpn/vpn_bloc.dart';
 import 'presentation/bloc/user/user_bloc.dart';
+import 'presentation/bloc/user_creation/user_creation_bloc.dart';
 
-// Core services
+// Core
 import 'core/constants/api_constants.dart';
 import 'core/services/revenuecat_service.dart';
 
@@ -34,26 +39,44 @@ Future<void> init() async {
   // Dio
   sl.registerLazySingleton(() => _createDio());
 
-  // Services
-  sl.registerLazySingleton<RevenueCatService>(() => RevenueCatService.instance);
+  // Core Services
+  sl.registerLazySingleton(() => RevenueCatService.instance);
 
   // Data sources
   sl.registerLazySingleton<ServerApi>(() => ServerApiImpl(sl()));
   sl.registerLazySingleton<LocalStorage>(() => LocalStorageImpl(sl()));
+  sl.registerLazySingleton<UserCreationApi>(() => UserCreationApiImpl(sl()));
 
   // Repositories
   sl.registerLazySingleton<ServerRepository>(
     () => ServerRepositoryImpl(serverApi: sl(), localStorage: sl()),
   );
+
   sl.registerLazySingleton<VpnRepository>(() => VpnRepositoryImpl());
+
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(sharedPreferences: sl(), revenueCatService: sl()),
+  );
+
+  sl.registerLazySingleton<UserCreationRepository>(
+    () => UserCreationRepositoryImpl(userCreationApi: sl()),
+  );
+
+  // Services
+  sl.registerLazySingleton<AppInitializationService>(
+    () => AppInitializationService(
+      userCreationRepository: sl(),
+      serverRepository: sl(),
+      revenueCatService: sl(),
+      sharedPreferences: sl(),
+    ),
   );
 
   // BLoCs
   sl.registerFactory(() => ServerBloc(sl()));
   sl.registerFactory(() => VpnBloc(sl()));
   sl.registerFactory(() => UserBloc(sl()));
+  sl.registerFactory(() => UserCreationBloc(sl()));
 }
 
 Dio _createDio() {

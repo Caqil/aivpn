@@ -1,6 +1,5 @@
-// BLoC
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/server.dart';
 import '../../../domain/repositories/server_repository.dart';
 import 'server_event.dart';
@@ -11,6 +10,7 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
 
   ServerBloc(this.repository) : super(ServerInitial()) {
     on<LoadServers>(_onLoadServers);
+    on<LoadServersFromProfile>(_onLoadServersFromProfile);
     on<SelectServer>(_onSelectServer);
     on<ClearSelectedServer>(_onClearSelectedServer);
     on<AddToFavorites>(_onAddToFavorites);
@@ -28,6 +28,31 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
 
       emit(ServerLoaded(
         servers: servers,
+        selectedServer: selectedServer,
+        favoriteServers: favoriteServers,
+      ));
+    } catch (e) {
+      emit(ServerError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadServersFromProfile(
+      LoadServersFromProfile event, Emitter<ServerState> emit) async {
+    try {
+      // Load favorite servers from repository
+      final favoriteServers = await repository.getFavoriteServers();
+      final selectedServer = await repository.getSelectedServer();
+
+      // If we have servers from profile, use them; otherwise fallback to API servers
+      List<Server> allServers = event.servers;
+      
+      if (allServers.isEmpty) {
+        // Fallback to API servers if profile has no servers
+        allServers = await repository.getServers();
+      }
+
+      emit(ServerLoaded(
+        servers: allServers,
         selectedServer: selectedServer,
         favoriteServers: favoriteServers,
       ));
