@@ -1,3 +1,6 @@
+// lib/presentation/widgets/globe_widget.dart - Fixed version
+import 'package:aivpn/data/services/location_service.dart';
+import 'package:aivpn/data/services/server_coordinates_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +15,6 @@ import '../bloc/vpn/vpn_bloc.dart';
 import '../bloc/vpn/vpn_state.dart';
 import '../bloc/server/server_bloc.dart';
 import '../bloc/server/server_state.dart';
-import '../bloc/user/user_bloc.dart';
-import '../bloc/user/user_state.dart';
 
 class GlobeWidget extends StatefulWidget {
   const GlobeWidget({Key? key}) : super(key: key);
@@ -24,13 +25,18 @@ class GlobeWidget extends StatefulWidget {
 
 class _GlobeWidgetState extends State<GlobeWidget> {
   late FlutterEarthGlobeController _controller;
-  List<Point> points = [];
-  List<PointConnection> connections = [];
+  List<Point> _points = [];
+  List<PointConnection> _connections = [];
+
+  GlobeCoordinates? _userCoordinates;
+  bool _isLoadingLocation = true;
+  String _userLocationName = 'Loading...';
 
   @override
   void initState() {
     super.initState();
     _initializeGlobe();
+    _loadUserLocation();
   }
 
   void _initializeGlobe() {
@@ -40,14 +46,48 @@ class _GlobeWidgetState extends State<GlobeWidget> {
         shadowColor: CupertinoColors.systemCyan,
         shadowBlurSigma: 30,
       ),
-      rotationSpeed: 0.05,
+      rotationSpeed: 0.02,
       zoom: 0.5,
       minZoom: 0.48,
-      isRotating: false,
+      isRotating: true,
       isBackgroundFollowingSphereRotation: true,
       background: Image.asset('assets/2k_stars.jpg').image,
       surface: Image.asset('assets/day.jpg').image,
     );
+
+    // Set up controller callback
+    _controller.onLoaded = () {
+      _updateGlobePoints();
+    };
+  }
+
+  Future<void> _loadUserLocation() async {
+    try {
+      final coordinates = await LocationService.instance.getUserCoordinates();
+      final location = await LocationService.instance.getCurrentLocation();
+
+      if (mounted) {
+        setState(() {
+          _userCoordinates = coordinates;
+          _userLocationName = location.displayName;
+          _isLoadingLocation = false;
+        });
+        _updateGlobePoints();
+      }
+    } catch (e) {
+      print('Error loading user location: $e');
+      if (mounted) {
+        setState(() {
+          _userCoordinates = const GlobeCoordinates(
+            51.5072,
+            -0.1276,
+          ); // London fallback
+          _userLocationName = 'London, UK';
+          _isLoadingLocation = false;
+        });
+        _updateGlobePoints();
+      }
+    }
   }
 
   @override
@@ -66,12 +106,12 @@ class _GlobeWidgetState extends State<GlobeWidget> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: isHovering
-            ? CupertinoColors.systemRed.withOpacity(0.8)
-            : CupertinoColors.systemRed.withOpacity(0.5),
+            ? CupertinoColors.systemBlue.withOpacity(0.9)
+            : CupertinoColors.systemBlue.withOpacity(0.7),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.2),
+            color: CupertinoColors.black.withOpacity(0.3),
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -79,9 +119,10 @@ class _GlobeWidgetState extends State<GlobeWidget> {
       ),
       child: Text(
         point.label ?? '',
-        style: CupertinoTheme.of(
-          context,
-        ).textTheme.textStyle.copyWith(color: CupertinoColors.white),
+        style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+          color: CupertinoColors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -93,139 +134,136 @@ class _GlobeWidgetState extends State<GlobeWidget> {
     bool visible,
   ) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: isHovering
-            ? CupertinoColors.systemBlue.withOpacity(0.8)
-            : CupertinoColors.systemBlue.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(8),
+            ? CupertinoColors.systemGreen.withOpacity(0.9)
+            : CupertinoColors.systemGreen.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
             color: CupertinoColors.black.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
+            blurRadius: 8,
+            spreadRadius: 1,
           ),
         ],
       ),
       child: Text(
         connection.label ?? '',
-        style: CupertinoTheme.of(
-          context,
-        ).textTheme.textStyle.copyWith(color: CupertinoColors.white),
+        style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+          color: CupertinoColors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 
   void _updateGlobePoints() {
+    if (_userCoordinates == null) return;
+
     try {
       final serverState = context.read<ServerBloc>().state;
       final vpnState = context.read<VpnBloc>().state;
 
-      // Try to get UserBloc state, but don't fail if it's not available
-      UserState? userState;
-      try {
-        userState = context.read<UserBloc>().state;
-      } catch (e) {
-        print('UserBloc not available: $e');
-      }
-
-      if (serverState is! ServerLoaded) {
-        return;
-      }
-
       // Clear existing points and connections
-      for (var point in points) {
+      for (var point in _points) {
         _controller.removePoint(point.id);
       }
-      for (var connection in connections) {
+      for (var connection in _connections) {
         _controller.removePointConnection(connection.id);
       }
 
-      points.clear();
-      connections.clear();
+      _points.clear();
+      _connections.clear();
 
-      // User location point (static for now, you can implement geolocation)
+      // Add user location point
       final userPoint = Point(
-        id: '1',
-        coordinates: const GlobeCoordinates(
-          40.7128,
-          -74.0060,
-        ), // New York as default
-        label: 'Your Location',
+        id: 'user_location',
+        coordinates: _userCoordinates!,
+        label: _userLocationName,
         labelBuilder: _buildPointLabel,
-        style: const PointStyle(color: CupertinoColors.systemRed, size: 6),
+        isLabelVisible: true,
+        style: const PointStyle(color: CupertinoColors.systemBlue, size: 8),
+        onTap: () {
+          print('User location tapped');
+        },
       );
-      points.add(userPoint);
+      _points.add(userPoint);
 
-      // Server point (if selected)
-      if (serverState.selectedServer != null) {
+      // Add server point if selected
+      if (serverState is ServerLoaded && serverState.selectedServer != null) {
+        final server = serverState.selectedServer!;
+        final serverCoordinates = ServerCoordinatesService.instance
+            .getServerCoordinates(server);
+
         final serverPoint = Point(
-          id: '2',
-          coordinates: GlobeCoordinates(
-            _parseCoordinate(
-              serverState.selectedServer!.address,
-            ), // Use address as latitude for demo
-            _parseCoordinate(
-              serverState.selectedServer!.port.toString(),
-            ), // Use port as longitude for demo
-          ),
-          label: serverState.selectedServer!.displayName,
+          id: 'server_location',
+          coordinates: serverCoordinates,
+          label: server.displayName,
           labelBuilder: _buildPointLabel,
-          style: const PointStyle(color: CupertinoColors.systemGreen, size: 6),
+          isLabelVisible: true,
+          style: PointStyle(
+            color: vpnState is VpnConnected
+                ? CupertinoColors.systemGreen
+                : CupertinoColors.systemOrange,
+            size: 8,
+          ),
+          onTap: () {
+            print('Server location tapped: ${server.name}');
+          },
         );
-        points.add(serverPoint);
+        _points.add(serverPoint);
 
         // Add connection if VPN is connected
         if (vpnState is VpnConnected) {
           final connection = PointConnection(
-            id: '1',
-            start: userPoint.coordinates,
-            end: serverPoint.coordinates,
+            id: 'vpn_connection',
+            start: _userCoordinates!,
+            end: serverCoordinates,
             isMoving: true,
             labelBuilder: _buildConnectionLabel,
             isLabelVisible: false,
             style: const PointConnectionStyle(
               type: PointConnectionType.solid,
-              color: CupertinoColors.systemRed,
+              color: CupertinoColors.systemGreen,
               lineWidth: 3,
-              dashSize: 4,
-              spacing: 10,
+              dashSize: 6,
+              spacing: 12,
             ),
-            label: 'Connected to ${serverState.selectedServer!.name}',
+            label: 'Connected to ${server.name}',
           );
-          connections.add(connection);
+          _connections.add(connection);
         }
       }
 
-      // Update globe with new points and connections
-      _controller.onLoaded = () {
-        for (var point in points) {
-          _controller.addPoint(point);
-        }
-        for (var connection in connections) {
-          _controller.addPointConnection(connection, animateDraw: true);
-        }
+      // Add points and connections to the globe
+      for (var point in _points) {
+        _controller.addPoint(point);
+      }
 
-        // Focus on appropriate location
-        if (vpnState is VpnConnected && points.length > 1) {
-          _controller.focusOnCoordinates(points[1].coordinates, animate: true);
-        } else {
-          _controller.focusOnCoordinates(points[0].coordinates, animate: true);
-        }
-      };
+      for (var connection in _connections) {
+        _controller.addPointConnection(connection, animateDraw: true);
+      }
+
+      // Focus on appropriate location
+      _focusOnRelevantLocation(vpnState, serverState);
     } catch (e) {
       print('Error updating globe points: $e');
     }
   }
 
-  double _parseCoordinate(String value) {
-    // Simple coordinate parsing - in real app, you'd have proper coordinates
-    // This is just for demonstration
-    try {
-      final hash = value.hashCode;
-      return (hash % 180).toDouble() - 90; // Range: -90 to 90
-    } catch (e) {
-      return 0.0;
+  void _focusOnRelevantLocation(VpnState vpnState, ServerState serverState) {
+    if (vpnState is VpnConnected &&
+        serverState is ServerLoaded &&
+        serverState.selectedServer != null) {
+      // Focus on server when connected
+      final serverCoordinates = ServerCoordinatesService.instance
+          .getServerCoordinates(serverState.selectedServer!);
+      _controller.focusOnCoordinates(serverCoordinates, animate: true);
+    } else if (_userCoordinates != null) {
+      // Focus on user location when disconnected
+      _controller.focusOnCoordinates(_userCoordinates!, animate: true);
     }
   }
 
@@ -235,24 +273,107 @@ class _GlobeWidgetState extends State<GlobeWidget> {
       listeners: [
         BlocListener<ServerBloc, ServerState>(
           listener: (context, serverState) {
-            _updateGlobePoints();
+            if (!_isLoadingLocation) {
+              _updateGlobePoints();
+            }
           },
         ),
         BlocListener<VpnBloc, VpnState>(
           listener: (context, vpnState) {
-            _updateGlobePoints();
-          },
-        ),
-        BlocListener<UserBloc, UserState>(
-          listener: (context, userState) {
-            _updateGlobePoints();
+            if (!_isLoadingLocation) {
+              _updateGlobePoints();
+
+              // Update rotation based on connection state
+              if (vpnState is VpnConnected) {
+                _controller.isRotating = false; // Stop rotation when connected
+              } else {
+                _controller.isRotating =
+                    true; // Resume rotation when disconnected
+              }
+            }
           },
         ),
       ],
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: FlutterEarthGlobe(controller: _controller, radius: 120),
+      child: Stack(
+        children: [
+          // Globe
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: FlutterEarthGlobe(controller: _controller, radius: 120),
+          ),
+          // Loading indicator
+          if (_isLoadingLocation)
+            const Positioned(
+              top: 50,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CupertinoActivityIndicator(color: CupertinoColors.white),
+                    SizedBox(width: 12),
+                    Text(
+                      'Loading your location...',
+                      style: TextStyle(
+                        color: CupertinoColors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Connection status indicator
+          Positioned(
+            bottom: 100,
+            left: 0,
+            right: 0,
+            child: BlocBuilder<VpnBloc, VpnState>(
+              builder: (context, vpnState) {
+                return Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          vpnState is VpnConnected
+                              ? CupertinoIcons.checkmark_circle_fill
+                              : CupertinoIcons.xmark_circle_fill,
+                          color: vpnState is VpnConnected
+                              ? CupertinoColors.systemGreen
+                              : CupertinoColors.systemRed,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          vpnState is VpnConnected
+                              ? 'Connected'
+                              : 'Disconnected',
+                          style: const TextStyle(
+                            color: CupertinoColors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

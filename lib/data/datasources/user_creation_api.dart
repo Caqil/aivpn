@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
+import '../../core/constants/api_constants.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/errors/exceptions.dart';
 import '../models/user_profile_model.dart';
@@ -35,11 +36,11 @@ class UserCreationApiImpl implements UserCreationApi {
       );
 
       final response = await dio.post(
-        '${AppConstants.baseUrl}/api/user',
+        '${ApiConstants.baseUrl}/api/user',
         data: requestData,
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${AppConstants.apiToken}',
+            'Authorization': 'Bearer ${ApiConstants.apiToken}',
             'Content-Type': 'application/json',
           },
         ),
@@ -61,10 +62,10 @@ class UserCreationApiImpl implements UserCreationApi {
   Future<bool> checkUserExists(String userId) async {
     try {
       final response = await dio.get(
-        '${AppConstants.baseUrl}/api/user/$userId',
+        '${ApiConstants.baseUrl}/api/user/$userId',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${AppConstants.apiToken}',
+            'Authorization': 'Bearer ${ApiConstants.apiToken}',
             'Accept': 'application/json',
           },
         ),
@@ -83,10 +84,10 @@ class UserCreationApiImpl implements UserCreationApi {
   Future<UserProfileModel> fetchUserProfile(String userId) async {
     try {
       final response = await dio.get(
-        '${AppConstants.baseUrl}/api/user/$userId',
+        '${ApiConstants.baseUrl}/api/user/$userId',
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${AppConstants.apiToken}',
+            'Authorization': 'Bearer ${ApiConstants.apiToken}',
             'Accept': 'application/json',
           },
         ),
@@ -159,11 +160,11 @@ class UserCreationApiImpl implements UserCreationApi {
       }
 
       final response = await dio.put(
-        '${AppConstants.baseUrl}/api/user/$userId',
+        '${ApiConstants.baseUrl}/api/user/$userId',
         data: updateData,
         options: Options(
           headers: {
-            'Authorization': 'Bearer ${AppConstants.apiToken}',
+            'Authorization': 'Bearer ${ApiConstants.apiToken}',
             'Accept': 'application/json',
           },
         ),

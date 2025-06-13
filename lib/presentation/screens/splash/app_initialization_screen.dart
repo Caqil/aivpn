@@ -89,57 +89,59 @@ class _AppInitializationScreenState extends State<AppInitializationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserCreationBloc, UserCreationState>(
-      listener: (context, state) {
-        if (state is UserProfileLoaded) {
-          // User exists and profile loaded successfully
-          final servers = state.userProfile.servers;
+    return Material(
+      child: BlocListener<UserCreationBloc, UserCreationState>(
+        listener: (context, state) {
+          if (state is UserProfileLoaded) {
+            // User exists and profile loaded successfully
+            final servers = state.userProfile.servers;
 
-          // Update server repository with servers from profile
-          if (servers.isNotEmpty) {
-            context.read<ServerBloc>().add(LoadServersFromProfile(servers));
+            // Update server repository with servers from profile
+            if (servers.isNotEmpty) {
+              context.read<ServerBloc>().add(LoadServersFromProfile(servers));
 
-            // Select first server if none selected
-            context.read<ServerBloc>().add(SelectServer(servers.first));
-          }
+              // Select first server if none selected
+              context.read<ServerBloc>().add(SelectServer(servers.first));
+            }
 
-          _navigateToHome();
-        } else if (state is UserNotFound) {
-          // User doesn't exist, create new user
-          final userId = RevenueCatService.instance.deviceId;
-          if (userId != null && userId.isNotEmpty) {
-            _createNewUser(userId);
-          } else {
+            _navigateToHome();
+          } else if (state is UserNotFound) {
+            // User doesn't exist, create new user
+            final userId = RevenueCatService.instance.deviceId;
+            if (userId != null && userId.isNotEmpty) {
+              _createNewUser(userId);
+            } else {
+              _navigateToPrivacy();
+            }
+          } else if (state is UserCreationSuccess) {
+            // New user created successfully
+            final servers = state.userProfile.servers;
+
+            // Update server repository with servers from profile
+            if (servers.isNotEmpty) {
+              context.read<ServerBloc>().add(LoadServersFromProfile(servers));
+
+              // Select first server
+              context.read<ServerBloc>().add(SelectServer(servers.first));
+            }
+
+            _navigateToHome();
+          } else if (state is UserCreationError) {
+            // Error creating user or loading profile
+            print('User creation error: ${state.message}');
             _navigateToPrivacy();
           }
-        } else if (state is UserCreationSuccess) {
-          // New user created successfully
-          final servers = state.userProfile.servers;
-
-          // Update server repository with servers from profile
-          if (servers.isNotEmpty) {
-            context.read<ServerBloc>().add(LoadServersFromProfile(servers));
-
-            // Select first server
-            context.read<ServerBloc>().add(SelectServer(servers.first));
-          }
-
-          _navigateToHome();
-        } else if (state is UserCreationError) {
-          // Error creating user or loading profile
-          print('User creation error: ${state.message}');
-          _navigateToPrivacy();
-        }
-      },
-      child: BlocBuilder<UserCreationBloc, UserCreationState>(
-        builder: (context, state) {
-          if (state is UserCreationLoading) {
-            return const LoadingSplashScreen();
-          }
-
-          // Show loading screen for all other states while processing
-          return const LoadingSplashScreen();
         },
+        child: BlocBuilder<UserCreationBloc, UserCreationState>(
+          builder: (context, state) {
+            if (state is UserCreationLoading) {
+              return const LoadingSplashScreen();
+            }
+
+            // Show loading screen for all other states while processing
+            return const LoadingSplashScreen();
+          },
+        ),
       ),
     );
   }

@@ -9,8 +9,8 @@ import '../errors/exceptions.dart';
 
 class RevenueCatService {
   static final String _apiKey = Platform.isIOS
-      ? 'appl_YOUR_IOS_API_KEY'  // Replace with your iOS API key
-      : 'goog_YOUR_ANDROID_API_KEY';  // Replace with your Android API key
+      ? 'appl_tTTXbgRpOxkMiUXVdqoILXgXowq' // Replace with your iOS API key
+      : 'goog_YOUR_ANDROID_API_KEY'; // Replace with your Android API key
 
   static final String monthlyProductId = Platform.isIOS
       ? 'monthly_360'
@@ -29,7 +29,7 @@ class RevenueCatService {
   String? _userId;
 
   // Stream controller for customer info updates
-  final StreamController<CustomerInfo> _customerInfoController = 
+  final StreamController<CustomerInfo> _customerInfoController =
       StreamController<CustomerInfo>.broadcast();
 
   Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
@@ -75,7 +75,7 @@ class RevenueCatService {
   }
 
   String? get deviceId => _deviceId;
-  String get getUserId() => _userId ?? _deviceId ?? '';
+  String getUserId() => _userId ?? _deviceId ?? '';
 
   Future<CustomerInfo> getCustomerInfo() async {
     try {
@@ -126,7 +126,8 @@ class RevenueCatService {
   bool isPremium(CustomerInfo customerInfo) {
     try {
       // Check if user has any active entitlement
-      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement
+          in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           return true;
         }
@@ -147,7 +148,8 @@ class RevenueCatService {
       }
 
       // Check if any entitlement is expired
-      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement
+          in customerInfo.entitlements.all.values) {
         if (!entitlement.isActive) {
           return true;
         }
@@ -162,7 +164,8 @@ class RevenueCatService {
   // Get expiration date of current subscription
   DateTime? getExpirationDate(CustomerInfo customerInfo) {
     try {
-      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement
+          in customerInfo.entitlements.all.values) {
         if (entitlement.isActive && entitlement.expirationDate != null) {
           return DateTime.parse(entitlement.expirationDate!);
         }
@@ -177,7 +180,8 @@ class RevenueCatService {
   // Get current subscription product ID
   String? getCurrentProductId(CustomerInfo customerInfo) {
     try {
-      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement
+          in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           return entitlement.productIdentifier;
         }
@@ -269,7 +273,8 @@ class RevenueCatService {
 
       // Get the first active entitlement
       EntitlementInfo? activeEntitlement;
-      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement
+          in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           activeEntitlement = entitlement;
           break;

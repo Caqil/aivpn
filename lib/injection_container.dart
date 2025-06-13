@@ -13,6 +13,8 @@ import 'data/repositories/user_repository_impl.dart';
 import 'data/services/app_initialization_service.dart';
 
 // Domain layer
+import 'data/services/location_service.dart';
+import 'data/services/server_coordinates_service.dart';
 import 'domain/repositories/server_repository.dart';
 import 'domain/repositories/user_creation_repository_impl.dart';
 import 'domain/repositories/vpn_repository.dart';
@@ -41,6 +43,8 @@ Future<void> init() async {
 
   // Core Services
   sl.registerLazySingleton(() => RevenueCatService.instance);
+  sl.registerLazySingleton(() => LocationService.instance);
+  sl.registerLazySingleton(() => ServerCoordinatesService.instance);
 
   // Data sources
   sl.registerLazySingleton<ServerApi>(() => ServerApiImpl(sl()));

@@ -1,5 +1,3 @@
-
-import 'package:aivpn/domain/entities/server.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/server/server_bloc.dart';
@@ -60,9 +58,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _navigateToHome() {
     if (mounted) {
-      Navigator.of(
-        context,
-      ).pushReplacement(CupertinoPageRoute(builder: (context) => HomeScreen()));
+      Navigator.of(context).pushReplacement(
+        CupertinoPageRoute(builder: (context) => const HomeScreen()),
+      );
     }
   }
 
@@ -86,13 +84,4 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const LoadingSplashScreen();
   }
-}
-
-class LoadServersFromProfile extends ServerEvent {
-  final List<Server> servers;
-
-  LoadServersFromProfile(this.servers);
-
-  @override
-  List<Object?> get props => [servers];
 }
