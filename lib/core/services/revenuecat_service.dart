@@ -1,16 +1,16 @@
-// lib/core/services/revenuecat_service.dart - Updated
+// lib/core/services/revenuecat_service.dart - Fixed with flutter_udid
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import '../../domain/entities/user.dart';
 import '../errors/exceptions.dart';
 
 class RevenueCatService {
   static final String _apiKey = Platform.isIOS
-      ? 'appl_tTTXbgRpOxkMiUXVdqoILXgXowq' // Replace with your iOS API key
-      : 'goog_YOUR_ANDROID_API_KEY'; // Replace with your Android API key
+      ? 'appl_YOUR_IOS_API_KEY'  // Replace with your iOS API key
+      : 'goog_YOUR_ANDROID_API_KEY';  // Replace with your Android API key
 
   static final String monthlyProductId = Platform.isIOS
       ? 'monthly_360'
@@ -24,21 +24,22 @@ class RevenueCatService {
   static RevenueCatService get instance => _instance ??= RevenueCatService._();
   RevenueCatService._();
 
-  final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   String? _deviceId;
   String? _userId;
 
   // Stream controller for customer info updates
-  final StreamController<CustomerInfo> _customerInfoController =
+  final StreamController<CustomerInfo> _customerInfoController = 
       StreamController<CustomerInfo>.broadcast();
 
   Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
 
   Future<void> initialize() async {
     try {
-      // Get device ID
-      _deviceId = await _getDeviceId();
+      // Get device ID using flutter_udid
+      _deviceId = await FlutterUdid.udid;
       _userId = _deviceId; // Use device ID as user ID
+
+      print('Got device ID from flutter_udid: $_deviceId');
 
       // Configure RevenueCat
       await Purchases.setLogLevel(LogLevel.info);
@@ -55,27 +56,13 @@ class RevenueCatService {
 
       print('RevenueCat initialized with device ID: $_deviceId');
     } catch (e) {
+      print('Error initializing RevenueCat: $e');
       throw VpnException('Failed to initialize RevenueCat: $e');
     }
   }
 
-  Future<String> _getDeviceId() async {
-    try {
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
-        return androidInfo.id;
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
-        return iosInfo.identifierForVendor ?? 'unknown_ios_device';
-      }
-      return 'unknown_device';
-    } catch (e) {
-      return 'unknown_device_error';
-    }
-  }
-
   String? get deviceId => _deviceId;
-  String getUserId() => _userId ?? _deviceId ?? '';
+  String get getUserId => _userId ?? _deviceId ?? '';
 
   Future<CustomerInfo> getCustomerInfo() async {
     try {
@@ -126,8 +113,7 @@ class RevenueCatService {
   bool isPremium(CustomerInfo customerInfo) {
     try {
       // Check if user has any active entitlement
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           return true;
         }
@@ -148,8 +134,7 @@ class RevenueCatService {
       }
 
       // Check if any entitlement is expired
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (!entitlement.isActive) {
           return true;
         }
@@ -164,8 +149,7 @@ class RevenueCatService {
   // Get expiration date of current subscription
   DateTime? getExpirationDate(CustomerInfo customerInfo) {
     try {
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (entitlement.isActive && entitlement.expirationDate != null) {
           return DateTime.parse(entitlement.expirationDate!);
         }
@@ -180,8 +164,7 @@ class RevenueCatService {
   // Get current subscription product ID
   String? getCurrentProductId(CustomerInfo customerInfo) {
     try {
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           return entitlement.productIdentifier;
         }
@@ -273,8 +256,7 @@ class RevenueCatService {
 
       // Get the first active entitlement
       EntitlementInfo? activeEntitlement;
-      for (EntitlementInfo entitlement
-          in customerInfo.entitlements.all.values) {
+      for (EntitlementInfo entitlement in customerInfo.entitlements.all.values) {
         if (entitlement.isActive) {
           activeEntitlement = entitlement;
           break;

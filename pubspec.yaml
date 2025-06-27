@@ -48,6 +48,7 @@ dependencies:
   share_plus: ^11.0.0
   load_switch: ^2.2.0
   shimmer: ^3.0.0
+  flutter_udid: ^4.0.0
 
 dev_dependencies:
   flutter_test:

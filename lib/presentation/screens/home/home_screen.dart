@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:load_switch/load_switch.dart';
 import '../../../data/services/location_service.dart';
 import '../../bloc/server/server_bloc.dart';
 import '../../bloc/server/server_state.dart';

@@ -1,3 +1,4 @@
+// lib/presentation/screens/splash/loading_splash_screen.dart - Fixed
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -81,9 +82,13 @@ class _LoadingSplashScreenState extends State<LoadingSplashScreen>
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          'assets/icons/icon.png',
-                          fit: BoxFit.cover,
+                        child: Container(
+                          color: CupertinoColors.systemBlue,
+                          child: const Icon(
+                            CupertinoIcons.shield_fill,
+                            size: 60,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),

@@ -2,7 +2,7 @@ class ApiConstants {
   static const String baseUrl = 'https://api.360aivpn.com';
   static const String serversEndpoint = '/api/servers';
   static const String apiToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWtyNCIsImFjY2VzcyI6InN1ZG8iLCJpYXQiOjE3NDY4NDkwNzUsImV4cCI6MjY5MjkyOTA3NX0.7QLWKHftA8XD9QIPNaryEY6svl5uZ00mcvIkZ2AITZw';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImFjY2VzcyI6InN1ZG8iLCJpYXQiOjE3NTA5OTg1MjIsImV4cCI6MTc1MTA4NDkyMn0.DyOfyMrvhQGENWL2dbvls67X6GAmVUs9WrJ_4KuNCL8';
 
   // Connection timeouts
   static const int connectTimeout = 30000; // 30 seconds

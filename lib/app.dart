@@ -1,5 +1,7 @@
+// lib/app.dart - Fixed with ScreenUtil initialization
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'injection_container.dart' as di;
 import 'presentation/bloc/server/server_bloc.dart';
@@ -20,10 +22,18 @@ class VpnApp extends StatelessWidget {
           create: (context) => di.sl<UserCreationBloc>(),
         ),
       ],
-      child: MaterialApp(
-        title: 'VPN App',
-        theme: _buildTheme(),
-        home: const SplashScreen(),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812), // iPhone 11 Pro design size
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return MaterialApp(
+            title: 'VPN App',
+            theme: _buildTheme(),
+            home: const SplashScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

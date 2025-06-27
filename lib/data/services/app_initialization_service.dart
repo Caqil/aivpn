@@ -1,4 +1,4 @@
-
+// lib/data/services/app_initialization_service.dart - Fixed
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +18,7 @@ class AppInitializationService {
 
   static const String _userProfileKey = 'user_profile';
   static const String _lastInitTimeKey = 'last_init_time';
+  static const String _userCreatedKey = 'user_created';
   static const Duration _initCacheTimeout = Duration(hours: 1);
 
   AppInitializationService({
@@ -29,34 +30,47 @@ class AppInitializationService {
 
   Future<AppInitializationResult> initializeApp() async {
     try {
-      // Initialize RevenueCat first
+      print('Starting app initialization...');
+
+      // Step 1: Initialize RevenueCat first to get device ID
       await revenueCatService.initialize();
-      final userId = revenueCatService.deviceId ?? '';
+      final userId = revenueCatService.deviceId;
 
-      if (userId.isEmpty) {
-        throw AppInitializationException('Failed to get device ID');
+      if (userId == null || userId.isEmpty) {
+        throw AppInitializationException(
+          'Failed to get device ID from RevenueCat',
+        );
       }
 
-      // Check if we need to initialize (cache timeout or first time)
-      final shouldInitialize = await _shouldPerformInitialization();
+      print('Device ID obtained: $userId');
 
-      UserProfile? userProfile;
+      // Step 2: Check subscription status
+      final customerInfo = await revenueCatService.getCustomerInfo();
+      final isPremium = revenueCatService.isPremium(customerInfo);
+      final isExpired = revenueCatService.isExpired(customerInfo);
 
-      if (shouldInitialize) {
-        userProfile = await _handleUserInitialization(userId);
-        await _cacheUserProfile(userProfile);
-        await _updateLastInitTime();
-      } else {
-        // Try to load from cache first
-        userProfile = await _getCachedUserProfile();
-        if (userProfile == null) {
-          userProfile = await _handleUserInitialization(userId);
-          await _cacheUserProfile(userProfile);
-        }
+      print('Subscription status - Premium: $isPremium, Expired: $isExpired');
+
+      // Step 3: Handle user creation/loading
+      UserProfile? userProfile = await _handleUserInitialization(
+        userId: userId,
+        isPremium: isPremium && !isExpired,
+      );
+
+      if (userProfile == null) {
+        throw AppInitializationException('Failed to initialize user profile');
       }
 
-      // Update servers in the server repository
+      print('User profile loaded successfully: ${userProfile.username}');
+
+      // Step 4: Cache the user profile
+      await _cacheUserProfile(userProfile);
+      await _updateLastInitTime();
+
+      // Step 5: Update servers in the server repository
       await _updateServersInRepository(userProfile.servers);
+
+      print('App initialization completed successfully');
 
       return AppInitializationResult(
         success: true,
@@ -64,11 +78,13 @@ class AppInitializationService {
         message: 'App initialized successfully',
       );
     } on TimeoutException catch (e) {
+      print('Initialization timeout: $e');
       throw AppInitializationException(
         'Request timed out. Please check your connection.',
         originalError: e,
       );
     } catch (e) {
+      print('Initialization error: $e');
       throw AppInitializationException(
         'Failed to initialize app: ${e.toString()}',
         originalError: e,
@@ -76,74 +92,94 @@ class AppInitializationService {
     }
   }
 
-  Future<UserProfile> _handleUserInitialization(String userId) async {
+  Future<UserProfile?> _handleUserInitialization({
+    required String userId,
+    required bool isPremium,
+  }) async {
     try {
-      // Check if user exists
+      print('Handling user initialization for: $userId');
+
+      // First, try to load from cache if recent
+      if (!await _shouldPerformInitialization()) {
+        final cachedProfile = await _getCachedUserProfile();
+        if (cachedProfile != null) {
+          print('Using cached user profile');
+          return cachedProfile;
+        }
+      }
+
+      // Check if user exists on the server
       final userExists = await userCreationRepository.checkUserExists(userId);
+      print('User exists on server: $userExists');
+
+      UserProfile userProfile;
 
       if (userExists) {
-        // User exists, fetch profile
-        return await _handleExistingUser(userId);
+        // User exists, fetch current profile
+        userProfile = await _handleExistingUser(userId, isPremium);
       } else {
         // User doesn't exist, create new user
-        return await _handleNewUser(userId);
+        userProfile = await _handleNewUser(userId, isPremium);
       }
+
+      // Mark user as created locally
+      await sharedPreferences.setBool(_userCreatedKey, true);
+
+      return userProfile;
     } catch (e) {
+      print('Error in user initialization: $e');
       throw AppInitializationException('Failed to initialize user: $e');
     }
   }
 
-  Future<UserProfile> _handleNewUser(String userId) async {
+  Future<UserProfile> _handleNewUser(String userId, bool isPremium) async {
     try {
-      // Clear any cached data
+      print('Creating new user: $userId (Premium: $isPremium)');
+
+      // Clear any cached data for fresh start
       await _clearUserPreferences();
 
-      // Get subscription status from RevenueCat
-      final customerInfo = await revenueCatService.getCustomerInfo();
-      final isPremium = revenueCatService.isPremium(customerInfo);
-
-      // Create new user
+      // Create new user on the server
       final userProfile = await userCreationRepository.createUser(
         userId: userId,
         isPremium: isPremium,
       );
 
+      print('New user created successfully');
       return userProfile;
     } catch (e) {
+      print('Error creating new user: $e');
       throw AppInitializationException('Failed to create new user: $e');
     }
   }
 
-  Future<UserProfile> _handleExistingUser(String userId) async {
+  Future<UserProfile> _handleExistingUser(String userId, bool isPremium) async {
     try {
-      // Get current subscription status
-      final customerInfo = await revenueCatService.getCustomerInfo();
-      final isPremium = revenueCatService.isPremium(customerInfo);
-      final isExpired = revenueCatService.isExpired(customerInfo);
+      print('Handling existing user: $userId');
 
       // Fetch current user profile
       final userProfile = await userCreationRepository.fetchUserProfile(userId);
 
-      // Check if user status needs updating
-      final needsUpdate = await _checkIfUserNeedsUpdate(
-        userProfile,
-        isPremium,
-        isExpired,
-      );
+      // Check if user status needs updating based on subscription
+      final needsUpdate = await _checkIfUserNeedsUpdate(userProfile, isPremium);
 
       if (needsUpdate) {
-        // Update user status
+        print('User needs status update - updating to Premium: $isPremium');
+
+        // Update user status on server
         await userCreationRepository.updateUserStatus(
           userId: userId,
-          isPremium: isPremium && !isExpired,
+          isPremium: isPremium,
         );
 
         // Fetch updated profile
         return await userCreationRepository.fetchUserProfile(userId);
       }
 
+      print('Using existing user profile without updates');
       return userProfile;
     } catch (e) {
+      print('Error handling existing user: $e');
       throw AppInitializationException('Failed to handle existing user: $e');
     }
   }
@@ -151,34 +187,33 @@ class AppInitializationService {
   Future<bool> _checkIfUserNeedsUpdate(
     UserProfile userProfile,
     bool isPremium,
-    bool isExpired,
   ) async {
     // Get last known status
     final lastPremiumStatus = sharedPreferences.getBool('was_premium') ?? false;
-    final lastExpiredStatus = sharedPreferences.getBool('was_expired') ?? false;
     final lastUpdateTime = _getLastUpdateTime();
 
-    final currentPremiumStatus = isPremium && !isExpired;
+    // Current status based on subscription
+    final currentPremiumStatus = isPremium;
 
     // Check if status changed
-    final statusChanged =
-        lastPremiumStatus != currentPremiumStatus ||
-        lastExpiredStatus != isExpired;
+    final statusChanged = lastPremiumStatus != currentPremiumStatus;
 
-    // Check if daily update is needed for expired users
-    final needsDailyUpdate =
-        isExpired && _shouldPerformDailyUpdate(lastUpdateTime);
-
-    // Check for invalid config
+    // Check for invalid config (mismatch between subscription and user config)
     final hasInvalidConfig = _checkInvalidConfig(
       userProfile,
       currentPremiumStatus,
     );
 
-    if (statusChanged || needsDailyUpdate || hasInvalidConfig) {
+    // Force update if it's been more than 24 hours
+    final needsDailyUpdate = _shouldPerformDailyUpdate(lastUpdateTime);
+
+    if (statusChanged || hasInvalidConfig || needsDailyUpdate) {
+      print(
+        'User needs update - Status changed: $statusChanged, Invalid config: $hasInvalidConfig, Daily update: $needsDailyUpdate',
+      );
+
       // Save current status
       await sharedPreferences.setBool('was_premium', currentPremiumStatus);
-      await sharedPreferences.setBool('was_expired', isExpired);
       await sharedPreferences.setInt(
         'last_update_time',
         DateTime.now().millisecondsSinceEpoch,
@@ -287,12 +322,15 @@ class AppInitializationService {
 
   Future<void> _updateServersInRepository(List<Server> servers) async {
     try {
-      // Clear existing servers and add new ones
+      print('Updating ${servers.length} servers in repository');
+
+      // Clear existing selected server
       await serverRepository.clearSelectedServer();
 
-      // If there are servers available, you might want to select the first one
+      // If there are servers available, select the first one
       if (servers.isNotEmpty) {
         await serverRepository.saveSelectedServer(servers.first);
+        print('Selected first server: ${servers.first.name}');
       }
     } catch (e) {
       print('Error updating servers in repository: $e');
@@ -306,7 +344,19 @@ class AppInitializationService {
       sharedPreferences.remove('country'),
       sharedPreferences.remove('ip'),
       sharedPreferences.remove(_userProfileKey),
+      sharedPreferences.remove(_userCreatedKey),
     ]);
+  }
+
+  // Public method to check if user has been created
+  bool hasUserBeenCreated() {
+    return sharedPreferences.getBool(_userCreatedKey) ?? false;
+  }
+
+  // Public method to force user creation
+  Future<AppInitializationResult> forceUserCreation() async {
+    await _clearUserPreferences();
+    return initializeApp();
   }
 }
 

@@ -1,3 +1,4 @@
+// lib/presentation/screens/settings/settings_screen.dart - Enhanced with connection retry
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ import '../features/features_screen.dart';
 import '../language/language_screen.dart';
 import '../subscription/subscription_screen.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../data/services/app_initialization_service.dart';
+import '../../../injection_container.dart' as di;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,6 +24,15 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late AppInitializationService _initService;
+  bool _isRetrying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initService = di.sl<AppInitializationService>();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +49,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           children: [
             _buildAccountSection(),
+            SizedBox(height: 30.h),
+            _buildConnectionSection(),
             SizedBox(height: 30.h),
             _buildCommonSection(),
             SizedBox(height: 30.h),
@@ -126,6 +140,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildConnectionSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(CupertinoIcons.wifi, size: Platform.isMacOS ? 20 : 24),
+            SizedBox(width: 8.w),
+            Text(
+              "Connection",
+              style: TextStyle(
+                fontSize: Platform.isMacOS ? 6.sp : 18.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.h),
+       
+      ],
     );
   }
 
@@ -307,6 +344,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!await launchUrl(uri)) {
       throw 'Could not launch $url';
     }
+  }
+
+  void _showSuccessDialog(String title, String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          CupertinoButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          CupertinoButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showLogoutDialog() {
