@@ -32,14 +32,14 @@ class Server extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        country,
-        address,
-        port,
-        protocol,
-        configUrl,
-        isPremium,
-        ping,
-      ];
+    id,
+    name,
+    country,
+    address,
+    port,
+    protocol,
+    configUrl,
+    isPremium,
+    ping,
+  ];
 }

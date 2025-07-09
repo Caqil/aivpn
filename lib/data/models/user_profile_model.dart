@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:uuid/uuid.dart';
+// lib/data/models/user_profile_model.dart - Fixed to handle API response format
 import '../../domain/entities/user_profile.dart';
 import '../../domain/entities/server.dart';
 import 'server_parser_service.dart';
@@ -34,22 +33,21 @@ class UserProfileModel {
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    print('📥 Parsing user profile JSON: ${json.keys.toList()}');
+
     return UserProfileModel(
       username: json['username'] ?? '',
       status: json['status'] ?? 'active',
       proxies: ProxyConfigModel.fromJson(json['proxies'] ?? {}),
-      inbounds: Map<String, List<String>>.from(
-        json['inbounds']?.map((k, v) => MapEntry(k, List<String>.from(v))) ??
-            {},
-      ),
-      expire: json['expire'] != null ? DateTime.parse(json['expire']) : null,
-      dataLimit: json['data_limit'],
+      inbounds: _parseInbounds(json['inbounds']),
+      expire: _parseExpire(json['expire']),
+      dataLimit: _parseDataLimit(json['data_limit']),
       dataLimitResetStrategy: json['data_limit_reset_strategy'] ?? 'no_reset',
       usedTraffic: json['used_traffic'] ?? 0,
       lifetimeUsedTraffic: json['lifetime_used_traffic'] ?? 0,
       links: List<String>.from(json['links'] ?? []),
       subscriptionUrl: json['subscription_url'] ?? '',
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: _parseDateTime(json['created_at']),
     );
   }
 
@@ -71,7 +69,11 @@ class UserProfileModel {
   }
 
   UserProfile toEntity() {
+    print('🔄 Converting to entity. Links count: ${links.length}');
+
+    // Parse servers from links
     final servers = ServerParserService.parseServerLinks(links);
+    print('📡 Parsed ${servers.length} servers from links');
 
     return UserProfile(
       username: username,
@@ -90,33 +92,104 @@ class UserProfileModel {
     );
   }
 
-  static Map<String, dynamic> createUserRequest({
-    required String userId,
-    required bool isPremium,
-  }) {
-    final vmessId = const Uuid().v4();
-    final vlessId = const Uuid().v4();
+  // Helper method to parse inbounds - handle both empty and populated cases
+  static Map<String, List<String>> _parseInbounds(dynamic inbounds) {
+    if (inbounds == null) {
+      print('📝 Inbounds is null, returning empty map');
+      return {};
+    }
 
-    return {
-      "username": userId,
-      "proxies": {
-        "trojan": {},
-        "shadowsocks": {"method": "aes-128-gcm"},
-        "vmess": {"id": vmessId},
-        "vless": {"id": vlessId, "flow": ""},
-      },
-      "inbounds": {
-        "trojan": ["Trojan Websocket TLS"],
-        "shadowsocks": ["Shadowsocks TCP"],
-        "vmess": ["VMess TCP", "VMess Websocket"],
-        "vless": ["VLESS TCP REALITY", "VLESS GRPC REALITY"],
-      },
-      "expire": isPremium ? null : null,
-      "data_limit": isPremium ? null : 2147483648,
-      "data_limit_reset_strategy": isPremium ? "no_reset" : "month",
-      "status": "active",
-      "note": "",
-    };
+    if (inbounds is Map<String, dynamic>) {
+      if (inbounds.isEmpty) {
+        print('📝 Inbounds is empty map');
+        return {};
+      }
+
+      final result = <String, List<String>>{};
+      inbounds.forEach((key, value) {
+        if (value is List) {
+          result[key] = List<String>.from(value);
+        } else {
+          result[key] = <String>[];
+        }
+      });
+      print('📝 Parsed inbounds: ${result.keys.toList()}');
+      return result;
+    }
+
+    print('📝 Inbounds is not a map, returning empty');
+    return {};
+  }
+
+  // Helper method to parse expire field
+  static DateTime? _parseExpire(dynamic expire) {
+    if (expire == null || expire == 0) {
+      return null;
+    }
+
+    if (expire is String) {
+      try {
+        return DateTime.parse(expire);
+      } catch (e) {
+        print('❌ Error parsing expire date string: $e');
+        return null;
+      }
+    }
+
+    if (expire is int) {
+      if (expire == 0) return null;
+      try {
+        // Handle both seconds and milliseconds timestamps
+        final timestamp = expire > 1000000000000 ? expire : expire * 1000;
+        return DateTime.fromMillisecondsSinceEpoch(timestamp);
+      } catch (e) {
+        print('❌ Error parsing expire timestamp: $e');
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  // Helper method to parse data limit
+  static int? _parseDataLimit(dynamic dataLimit) {
+    if (dataLimit == null) return null;
+
+    if (dataLimit is int) {
+      return dataLimit == 0 ? null : dataLimit;
+    }
+
+    if (dataLimit is String) {
+      try {
+        final parsed = int.parse(dataLimit);
+        return parsed == 0 ? null : parsed;
+      } catch (e) {
+        print('❌ Error parsing data limit: $e');
+        return null;
+      }
+    }
+
+    return null;
+  }
+
+  // Helper method to parse created_at date
+  static DateTime _parseDateTime(dynamic dateTime) {
+    if (dateTime == null) {
+      print('⚠️ DateTime is null, using current time');
+      return DateTime.now();
+    }
+
+    if (dateTime is String) {
+      try {
+        return DateTime.parse(dateTime);
+      } catch (e) {
+        print('❌ Error parsing date string: $e');
+        return DateTime.now();
+      }
+    }
+
+    print('⚠️ DateTime is not a string, using current time');
+    return DateTime.now();
   }
 }
 
@@ -135,14 +208,28 @@ class ProxyConfigModel {
 
   factory ProxyConfigModel.fromJson(Map<String, dynamic> json) {
     return ProxyConfigModel(
-      vmess: json['vmess'] != null
-          ? VmessConfigModel.fromJson(json['vmess'])
+      vmess:
+          json['vmess'] != null &&
+              json['vmess'] is Map<String, dynamic> &&
+              (json['vmess'] as Map).isNotEmpty
+          ? VmessConfigModel.fromJson(Map<String, dynamic>.from(json['vmess']))
           : null,
-      vless: json['vless'] != null
-          ? VlessConfigModel.fromJson(json['vless'])
+      vless:
+          json['vless'] != null &&
+              json['vless'] is Map<String, dynamic> &&
+              (json['vless'] as Map).isNotEmpty
+          ? VlessConfigModel.fromJson(Map<String, dynamic>.from(json['vless']))
           : null,
-      trojan: json['trojan'],
-      shadowsocks: json['shadowsocks'],
+      trojan:
+          json['trojan'] is Map<String, dynamic> &&
+              (json['trojan'] as Map).isNotEmpty
+          ? Map<String, dynamic>.from(json['trojan'])
+          : null,
+      shadowsocks:
+          json['shadowsocks'] is Map<String, dynamic> &&
+              (json['shadowsocks'] as Map).isNotEmpty
+          ? Map<String, dynamic>.from(json['shadowsocks'])
+          : null,
     );
   }
 
@@ -194,7 +281,7 @@ class VlessConfigModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'flow': flow};
+    return {'id': id, if (flow.isNotEmpty) 'flow': flow};
   }
 
   VlessConfig toEntity() {
