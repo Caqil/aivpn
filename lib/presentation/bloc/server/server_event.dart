@@ -1,7 +1,6 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+// lib/presentation/bloc/server/server_event.dart - Updated with new events
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/server.dart';
-import '../../../domain/repositories/server_repository.dart';
 
 // Events
 abstract class ServerEvent extends Equatable {
@@ -47,3 +46,38 @@ class RemoveFromFavorites extends ServerEvent {
 }
 
 class LoadFavorites extends ServerEvent {}
+
+class RefreshServers extends ServerEvent {}
+
+// New events for better server management
+class UpdateServerPing extends ServerEvent {
+  final String serverId;
+  final int ping;
+
+  UpdateServerPing(this.serverId, this.ping);
+
+  @override
+  List<Object?> get props => [serverId, ping];
+}
+
+class FilterServers extends ServerEvent {
+  final String? countryFilter;
+  final String? protocolFilter;
+  final bool? isPremiumFilter;
+  final String? searchQuery;
+
+  FilterServers({
+    this.countryFilter,
+    this.protocolFilter,
+    this.isPremiumFilter,
+    this.searchQuery,
+  });
+
+  @override
+  List<Object?> get props => [
+    countryFilter,
+    protocolFilter,
+    isPremiumFilter,
+    searchQuery,
+  ];
+}

@@ -1,0 +1,161 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "38E2FD3F",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6497651476",
+    "_developerTeamID" : "A6BXPFQ776",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 773739065.21399403,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21477017",
+      "localizations" : [
+
+      ],
+      "name" : "360 Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "5.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6498401622",
+          "introductoryOffer" : {
+            "displayPrice" : "2.99",
+            "internalID" : "E45DA94A",
+            "numberOfPeriods" : 3,
+            "paymentMode" : "payAsYouGo",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Access all server for 30 days",
+              "displayName" : "360 AI Premium 30 days",
+              "locale" : "en_GB"
+            }
+          ],
+          "productID" : "monthly_360",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "360 AI Premium Monthly",
+          "subscriptionGroupID" : "21477017",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "69.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6498397644",
+          "introductoryOffer" : {
+            "displayPrice" : "29.99",
+            "internalID" : "AA958508",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "payAsYouGo",
+            "subscriptionPeriod" : "P1Y"
+          },
+          "localizations" : [
+            {
+              "description" : "Access all server for 1 years",
+              "displayName" : "360 AI Premium 1 years",
+              "locale" : "en_GB"
+            }
+          ],
+          "productID" : "yearly_360",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "360 AI Premium Yearly",
+          "subscriptionGroupID" : "21477017",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "subscriptionOffersKeyPair" : {
+    "id" : "5D384974",
+    "privateKey" : "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg3VHqI3o/DEIOhUWE3RroySLoyw7Y4PL8raRO/ZzZIbGgCgYIKoZIzj0DAQehRANCAARUFFOcS4BkeF83/x0tW9NNHF4ShCUorzYQrnJlbV1wh+gtOzzAFtKQJvf8QoO9ZN8WZ7uPANMuYJFcM5F2/lGw"
+  },
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

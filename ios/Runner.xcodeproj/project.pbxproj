@@ -10,10 +10,21 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A22FE8C82E20E40200C67700 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A22FE8C72E20E40200C67700 /* NetworkExtension.framework */; };
+		A22FE8D02E20E40200C67700 /* Core.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A22FE8C62E20E40200C67700 /* Core.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A22FE9482E20E73300C67700 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9472E20E73300C67700 /* main.m */; };
+		A22FE9492E20E73300C67700 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9462E20E73300C67700 /* AppDelegate.m */; };
+		A22FE95A2E20E81C00C67700 /* BGParserSS.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE94E2E20E81C00C67700 /* BGParserSS.m */; };
+		A22FE95B2E20E81C00C67700 /* BGParserVmess.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9542E20E81C00C67700 /* BGParserVmess.m */; };
+		A22FE95C2E20E81C00C67700 /* BGParser.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE94C2E20E81C00C67700 /* BGParser.m */; };
+		A22FE95D2E20E81C00C67700 /* BGVPNManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9562E20E81C00C67700 /* BGVPNManager.m */; };
+		A22FE95E2E20E81C00C67700 /* BGParserTrojan.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9502E20E81C00C67700 /* BGParserTrojan.m */; };
+		A22FE95F2E20E81C00C67700 /* BGParserVless.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9522E20E81C00C67700 /* BGParserVless.m */; };
+		A22FE9602E20E81C00C67700 /* YDBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = A22FE9582E20E81C00C67700 /* YDBase64.m */; };
+		A22FE9612E20E87500C67700 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A22FE94A2E20E7B600C67700 /* libresolv.tbd */; };
 		ECB4F2A752805504B1569680 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8A456B1723BFA6B9E01E4AB /* Pods_Runner.framework */; };
 		FA713BCE04BB7CBE53559CBD /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A92A3F9602FE5BDFA94E1F3 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
@@ -26,6 +37,13 @@
 			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
 			remoteInfo = Runner;
 		};
+		A22FE8CE2E20E40200C67700 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A22FE8C52E20E40200C67700;
+			remoteInfo = Core;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +55,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A22FE8D12E20E40200C67700 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A22FE8D02E20E40200C67700 /* Core.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -52,7 +81,6 @@
 		4543846BA98C9A24CC38CB15 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		4EA4CD4B42AC55B45D7DA55B /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
-		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7CA979A5885E8834FB1FF933 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		9107B857E635BF989CE78197 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -63,9 +91,55 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A22FE8C62E20E40200C67700 /* Core.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Core.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A22FE8C72E20E40200C67700 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		A22FE8D72E20E42100C67700 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		A22FE9452E20E73300C67700 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A22FE9462E20E73300C67700 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A22FE9472E20E73300C67700 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A22FE94A2E20E7B600C67700 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		A22FE94B2E20E81C00C67700 /* BGParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGParser.h; sourceTree = "<group>"; };
+		A22FE94C2E20E81C00C67700 /* BGParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGParser.m; sourceTree = "<group>"; };
+		A22FE94D2E20E81C00C67700 /* BGParserSS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGParserSS.h; sourceTree = "<group>"; };
+		A22FE94E2E20E81C00C67700 /* BGParserSS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGParserSS.m; sourceTree = "<group>"; };
+		A22FE94F2E20E81C00C67700 /* BGParserTrojan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGParserTrojan.h; sourceTree = "<group>"; };
+		A22FE9502E20E81C00C67700 /* BGParserTrojan.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGParserTrojan.m; sourceTree = "<group>"; };
+		A22FE9512E20E81C00C67700 /* BGParserVless.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGParserVless.h; sourceTree = "<group>"; };
+		A22FE9522E20E81C00C67700 /* BGParserVless.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGParserVless.m; sourceTree = "<group>"; };
+		A22FE9532E20E81C00C67700 /* BGParserVmess.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGParserVmess.h; sourceTree = "<group>"; };
+		A22FE9542E20E81C00C67700 /* BGParserVmess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGParserVmess.m; sourceTree = "<group>"; };
+		A22FE9552E20E81C00C67700 /* BGVPNManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGVPNManager.h; sourceTree = "<group>"; };
+		A22FE9562E20E81C00C67700 /* BGVPNManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BGVPNManager.m; sourceTree = "<group>"; };
+		A22FE9572E20E81C00C67700 /* YDBase64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YDBase64.h; sourceTree = "<group>"; };
+		A22FE9582E20E81C00C67700 /* YDBase64.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YDBase64.m; sourceTree = "<group>"; };
 		ED7DA5CBB66E850156407A1D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F8A456B1723BFA6B9E01E4AB /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A22FE8D52E20E40200C67700 /* Exceptions for "Core" folder in "Core" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A22FE8C52E20E40200C67700 /* Core */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		A22FE8C92E20E40200C67700 /* Core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A22FE8D52E20E40200C67700 /* Exceptions for "Core" folder in "Core" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		14F5FE18E77D98EAD05AD296 /* Frameworks */ = {
@@ -81,6 +155,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECB4F2A752805504B1569680 /* Pods_Runner.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A22FE8C32E20E40200C67700 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A22FE9612E20E87500C67700 /* libresolv.tbd in Frameworks */,
+				A22FE8C82E20E40200C67700 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,6 +207,7 @@
 			children = (
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
+				A22FE8C92E20E40200C67700 /* Core */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
 				406C44C95BEE3328F31F57AF /* Pods */,
@@ -136,6 +220,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
+				A22FE8C62E20E40200C67700 /* Core.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,23 +228,50 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				A22FE9592E20E81C00C67700 /* src */,
+				A22FE9452E20E73300C67700 /* AppDelegate.h */,
+				A22FE9462E20E73300C67700 /* AppDelegate.m */,
+				A22FE9472E20E73300C67700 /* main.m */,
+				A22FE8D72E20E42100C67700 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
-				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		A22FE9592E20E81C00C67700 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A22FE94B2E20E81C00C67700 /* BGParser.h */,
+				A22FE94C2E20E81C00C67700 /* BGParser.m */,
+				A22FE94D2E20E81C00C67700 /* BGParserSS.h */,
+				A22FE94E2E20E81C00C67700 /* BGParserSS.m */,
+				A22FE94F2E20E81C00C67700 /* BGParserTrojan.h */,
+				A22FE9502E20E81C00C67700 /* BGParserTrojan.m */,
+				A22FE9512E20E81C00C67700 /* BGParserVless.h */,
+				A22FE9522E20E81C00C67700 /* BGParserVless.m */,
+				A22FE9532E20E81C00C67700 /* BGParserVmess.h */,
+				A22FE9542E20E81C00C67700 /* BGParserVmess.m */,
+				A22FE9552E20E81C00C67700 /* BGVPNManager.h */,
+				A22FE9562E20E81C00C67700 /* BGVPNManager.m */,
+				A22FE9572E20E81C00C67700 /* YDBase64.h */,
+				A22FE9582E20E81C00C67700 /* YDBase64.m */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		C6E82DCB4BF4E128E6DA20A5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A22FE94A2E20E7B600C67700 /* libresolv.tbd */,
 				F8A456B1723BFA6B9E01E4AB /* Pods_Runner.framework */,
 				2A92A3F9602FE5BDFA94E1F3 /* Pods_RunnerTests.framework */,
+				A22FE8C72E20E40200C67700 /* NetworkExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -191,6 +303,7 @@
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				4747C9EFE8F2AAE316D23694 /* [CP] Check Pods Manifest.lock */,
+				A22FE8D12E20E40200C67700 /* Embed Foundation Extensions */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -202,11 +315,32 @@
 			buildRules = (
 			);
 			dependencies = (
+				A22FE8CF2E20E40200C67700 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A22FE8C52E20E40200C67700 /* Core */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A22FE8D62E20E40200C67700 /* Build configuration list for PBXNativeTarget "Core" */;
+			buildPhases = (
+				A22FE8C22E20E40200C67700 /* Sources */,
+				A22FE8C32E20E40200C67700 /* Frameworks */,
+				A22FE8C42E20E40200C67700 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A22FE8C92E20E40200C67700 /* Core */,
+			);
+			name = Core;
+			productName = Core;
+			productReference = A22FE8C62E20E40200C67700 /* Core.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -215,6 +349,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
@@ -225,6 +360,9 @@
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
+					};
+					A22FE8C52E20E40200C67700 = {
+						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
@@ -243,6 +381,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
+				A22FE8C52E20E40200C67700 /* Core */,
 			);
 		};
 /* End PBXProject section */
@@ -263,6 +402,13 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A22FE8C42E20E40200C67700 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,8 +522,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				A22FE95A2E20E81C00C67700 /* BGParserSS.m in Sources */,
+				A22FE95B2E20E81C00C67700 /* BGParserVmess.m in Sources */,
+				A22FE95C2E20E81C00C67700 /* BGParser.m in Sources */,
+				A22FE95D2E20E81C00C67700 /* BGVPNManager.m in Sources */,
+				A22FE95E2E20E81C00C67700 /* BGParserTrojan.m in Sources */,
+				A22FE95F2E20E81C00C67700 /* BGParserVless.m in Sources */,
+				A22FE9602E20E81C00C67700 /* YDBase64.m in Sources */,
+				A22FE9482E20E73300C67700 /* main.m in Sources */,
+				A22FE9492E20E73300C67700 /* AppDelegate.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A22FE8C22E20E40200C67700 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +549,11 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 331C8085294A63A400263BE5 /* PBXContainerItemProxy */;
+		};
+		A22FE8CF2E20E40200C67700 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A22FE8C52E20E40200C67700 /* Core */;
+			targetProxy = A22FE8CE2E20E40200C67700 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -469,15 +635,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 59T9LR42SG;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CURRENT_PROJECT_VERSION = 200;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "360 AI VPN";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -540,7 +709,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -597,7 +766,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = AppIcon;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -653,15 +822,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 59T9LR42SG;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CURRENT_PROJECT_VERSION = 200;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "360 AI VPN";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -677,15 +849,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 59T9LR42SG;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
+				CURRENT_PROJECT_VERSION = 200;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				INFOPLIST_KEY_CFBundleDisplayName = "360 AI VPN";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -693,6 +868,135 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
+		};
+		A22FE8D22E20E40200C67700 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = Core/Core.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Core",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Core/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Core;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn.Core;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A22FE8D32E20E40200C67700 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = Core/Core.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Core",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Core/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Core;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn.Core;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A22FE8D42E20E40200C67700 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = Core/Core.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A6BXPFQ776;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Core",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Core/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Core;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.360aivpn.Core;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
 		};
 /* End XCBuildConfiguration section */
 
@@ -723,6 +1027,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A22FE8D62E20E40200C67700 /* Build configuration list for PBXNativeTarget "Core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A22FE8D22E20E40200C67700 /* Debug */,
+				A22FE8D32E20E40200C67700 /* Release */,
+				A22FE8D42E20E40200C67700 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

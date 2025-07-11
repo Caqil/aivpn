@@ -8,12 +8,12 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - purchases_flutter (8.9.0):
+  - purchases_flutter (8.10.6):
     - Flutter
-    - PurchasesHybridCommon (= 13.32.0)
-  - PurchasesHybridCommon (13.32.0):
-    - RevenueCat (= 5.24.0)
-  - RevenueCat (5.24.0)
+    - PurchasesHybridCommon (= 14.2.0)
+  - PurchasesHybridCommon (14.2.0):
+    - RevenueCat (= 5.32.0)
+  - RevenueCat (5.32.0)
   - SAMKeychain (1.5.3)
   - share_plus (0.0.1):
     - Flutter
@@ -62,9 +62,9 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_udid: f7c3884e6ec2951efe4f9de082257fc77c4d15e9
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  purchases_flutter: 5c7fbfbe656117ea8a72d132a82294a2025ef8ae
-  PurchasesHybridCommon: 662aa1f4769ff4ef594e35adf1a5d0ad7b3d08b7
-  RevenueCat: 2d3639d30b8a71cbfe3d99cef8243c602793e0ec
+  purchases_flutter: 7f2f923fde8ab75125c3e85522a43f6ed1253580
+  PurchasesHybridCommon: f1650b33e9a1dd04d5e8a40dfe757f39e63f935c
+  RevenueCat: 7e1d0768fb287c9983173c9b28e39ccbeeb828a9
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7

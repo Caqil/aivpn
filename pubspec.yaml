@@ -39,7 +39,7 @@ dependencies:
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
   equatable: ^2.0.7
-  purchases_flutter: ^8.9.0
+  purchases_flutter: ^8.10.6
   device_info_plus: ^11.4.0
   flutter_earth_globe: ^1.0.5
   flutter_screenutil: ^5.9.3
@@ -60,10 +60,19 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/ic_icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
+  macos:
+    generate: true
+    image_path: "assets/ic_icon.png"
 # The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is

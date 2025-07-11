@@ -11,6 +11,7 @@ import '../../bloc/vpn/vpn_event.dart';
 import '../../bloc/user/user_bloc.dart';
 import '../../bloc/user/user_state.dart';
 import '../../widgets/globe_widget.dart';
+import '../connection/debug.dart';
 import '../servers/server_list_screen.dart';
 import '../settings/settings_screen.dart';
 import '../subscription/subscription_screen.dart';
@@ -78,7 +79,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           // Globe Background (Handle globe widget gracefully)
           Center(child: const GlobeWidget()),
 
-          // Bottom Control Panel
+          Positioned(
+            top: 100,
+            left: 0,
+            right: 0,
+            child: SingleChildScrollView(child: const TargetedVpnDebugWidget()),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: _buildBottomControlPanel(),

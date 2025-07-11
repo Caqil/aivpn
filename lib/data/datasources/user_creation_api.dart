@@ -162,47 +162,7 @@ class UserCreationApiImpl implements UserCreationApi {
 
   // Helper method to sanitize username - makes it API compliant
   String _sanitizeUsername(String username) {
-    print('🔧 Original username: $username');
-
-    // Convert to lowercase
-    String sanitized = username.toLowerCase();
-
-    // Replace any character that's not a-z, 0-9, or underscore with underscore
-    sanitized = sanitized.replaceAll(RegExp(r'[^a-z0-9_]'), '_');
-
-    // Remove consecutive underscores
-    sanitized = sanitized.replaceAll(RegExp(r'_{2,}'), '_');
-
-    // Remove leading/trailing underscores
-    sanitized = sanitized.replaceAll(RegExp(r'^_+|_+$'), '');
-
-    // Ensure it starts with a letter or number (not underscore)
-    if (sanitized.startsWith('_')) {
-      sanitized = 'u$sanitized';
-    }
-
-    // Ensure minimum length (3 characters)
-    if (sanitized.length < 3) {
-      // Add timestamp suffix to make it unique and valid
-      final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      sanitized = 'user_${timestamp.substring(timestamp.length - 6)}';
-    }
-
-    // Ensure maximum length (32 characters)
-    if (sanitized.length > 32) {
-      sanitized = sanitized.substring(0, 32);
-    }
-
-    // Final check - if still invalid, use fallback
-    if (!RegExp(
-      r'^[a-z0-9][a-z0-9_]*[a-z0-9]$|^[a-z0-9]{3}$',
-    ).hasMatch(sanitized)) {
-      final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      sanitized = 'user${timestamp.substring(timestamp.length - 6)}';
-    }
-
-    print('🔧 Sanitized username: $sanitized');
-    return sanitized;
+    return username;
   }
 
   // Create the request body matching the API specification
